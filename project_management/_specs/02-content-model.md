@@ -9,6 +9,21 @@ All content lives in `content/`. Two locations:
 | `content/home.md` | `/` |
 | `content/pages/<slug>.md` | `/<slug>` |
 
+## Implementation status
+
+Status as of 2026-04-30 after QA on **spec 01**:
+
+- Implemented: frontmatter schema validation, file-backed content repository, static route generation, explicit slug validation in `[...slug]`, slide splitting for presentation pages, and seeded content for `home`, `linux`, `macos`, `windows`, and `mobile`.
+- Verified locally: `npm run test` covers `splitSlides`, repository validation failures, missing-file behavior, and slug filtering; `npm run test:e2e` covers the generated routes; and `npm run build` succeeds with the current content set.
+- Current seeded content mix: `home` and `windows` use `standard`; `linux`, `macos`, and `mobile` use `presentation`.
+- Remaining QA gap: repository behavior is unit-tested, but there is still no browser-level scenario for bad content files because invalid frontmatter is designed to fail at build time.
+
+## Notable implementation details
+
+- The catch-all route in `src/app/[...slug]/page.tsx` performs a second explicit kebab-case validation check before loading content and returns `notFound()` for invalid slugs.
+- The repository still filters `getAllSlugs()` to kebab-case names, so invalid markdown filenames are excluded from static generation.
+- Image-directive slide parsing is implemented and tested, but the seeded content currently uses text-only slides.
+
 ## Frontmatter schema (Zod)
 
 ```ts
@@ -120,8 +135,17 @@ export async function generateMetadata(
 
 export default async function Page({ params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params;
-  if (!slug?.length) notFound();
-  const page = await getPagesRepo().getPageBySlug(slug.join("/"));
+
+  if (!slug?.length) {
+    notFound();
+  }
+
+  const joinedSlug = slug.join("/");
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(joinedSlug)) {
+    notFound();
+  }
+
+  const page = await getPagesRepo().getPageBySlug(joinedSlug);
   return <PageLayoutFactory page={page} />;
 }
 ```
@@ -181,9 +205,9 @@ export function splitSlides(body: string): ParsedSlide[] {
 }
 ```
 
-## Content files to create
+## Seeded content files
 
-Create all five files before running `npm run build`. Without them `generateStaticParams` returns an empty array and the homepage 404s. The `linux.md` full example is at the bottom of this spec — copy it to `content/pages/linux.md`.
+The following five markdown files are already created in the repo and are the current build baseline.
 
 ```markdown
 <!-- content/home.md -->
@@ -191,6 +215,9 @@ Create all five files before running `npm run build`. Without them `generateStat
 title: "OS Stories"
 layout: "standard"
 summary: "A scrolling history of operating systems."
+seo:
+  title: "OS Stories"
+  description: "The story of operating systems, told through animated scroll-driven pages."
 ---
 
 Welcome to OS Stories. Explore the operating systems that shaped computing.
@@ -199,6 +226,14 @@ Welcome to OS Stories. Explore the operating systems that shaped computing.
 - [macOS](/macos)
 - [Windows](/windows)
 - [Mobile](/mobile)
+
+## Why these systems matter
+
+Operating systems decide who gets power, how software reaches people, and what kinds of computing feel natural.
+
+## How to read this site
+
+Some pages read like essays. Others lock into sticky slides and animate as you move through the story.
 ```
 
 ```markdown
@@ -207,55 +242,78 @@ Welcome to OS Stories. Explore the operating systems that shaped computing.
 title: "macOS"
 layout: "presentation"
 summary: "Elegant, closed, and deeply integrated."
+seo:
+  title: "macOS | OS Stories"
+  description: "A presentation-style history of macOS."
 ---
 
 ## The desktop Apple built
 
-macOS set the standard for consumer operating systems.
+macOS turned interface polish into strategy. Hardware and software moved together, which made the whole product feel more coherent.
 
 ---
 
-## From System 1 to Sequoia
+## From System 1 to Apple silicon
 
-Over 40 years of refinement.
+Over decades, Apple kept rebuilding the platform without giving up the feeling that the machine should disappear behind the work.
+
+---
+
+## Who it is for
+
+macOS works best for people who value integration, industrial design, and a platform that narrows choice in exchange for consistency.
 ```
 
 ```markdown
 <!-- content/pages/windows.md -->
 ---
 title: "Windows"
-layout: "presentation"
-summary: "The OS that runs the world's offices."
+layout: "standard"
+summary: "The mainstream operating system that turned compatibility into scale."
+seo:
+  title: "Windows | OS Stories"
+  description: "A long-form look at Windows and its role in mass-market computing."
 ---
 
-## Ubiquity by default
+## The default desktop for most people
 
-Windows ships on most of the world's PCs.
+Windows became dominant not because it was pure, but because it adapted to enormous hardware variety and decades of software expectations.
 
----
+## Its real strength was compatibility
 
-## From MS-DOS to 11
+Businesses, schools, OEMs, and game developers all converged on Windows because the platform kept old workflows alive while still moving forward.
 
-A 40-year journey of backward compatibility.
+## Who it is for
+
+Windows is for the broad middle of computing: users who need reach, peripheral support, enterprise software, and the least surprise when sharing files with everyone else.
 ```
 
 ```markdown
 <!-- content/pages/mobile.md -->
 ---
-title: "Mobile OS"
+title: "Mobile"
 layout: "presentation"
-summary: "The computer in your pocket."
+summary: "The operating system leaves the desk and becomes the world in your pocket."
+seo:
+  title: "Mobile | OS Stories"
+  description: "A scroll-driven look at the rise of mobile operating systems."
 ---
 
-## iOS and Android
+## Computing shrank and intensified
 
-Two ecosystems, billions of devices.
+Mobile operating systems changed the center of gravity from files and windows to gestures, apps, sensors, and constant connection.
 
 ---
 
-## The smartphone revolution
+## iOS and Android split the market
 
-2007 changed everything.
+One model prized control and vertical integration. The other scaled through manufacturer diversity and broad distribution.
+
+---
+
+## Who it is for
+
+Mobile is for everyone, which is why its operating systems are defined less by power features and more by reach, safety, battery life, and habit.
 ```
 
 ## Example page: Linux
@@ -264,28 +322,31 @@ Two ecosystems, billions of devices.
 ---
 title: "Linux"
 layout: "presentation"
-summary: "Free, open, and built for everyone."
+summary: "Open systems, portable kernels, and a culture built around control."
+seo:
+  title: "Linux | OS Stories"
+  description: "The Linux story told through scroll-driven presentation slides."
 ---
 
-![bg](/images/linux-dark.jpg)
+## Linux became the operating system of builders
 
-## The kernel that runs the world
-
-Linux powers everything from your router to the cloud.
-
----
-
-![split](/images/linus.jpg)
-
-## One person, one idea
-
-Linus Torvalds posted a message in 1991. The rest is history.
+It won servers, containers, embedded devices, and the imagination of people who want to understand the machine they use.
 
 ---
 
-## Why Linux?
+## A kernel, not a single product
 
-- Free and open source
-- Runs on any hardware
-- Maintained by thousands of contributors
+Linux spread because distributions turned one kernel into many philosophies: stable, experimental, corporate, minimalist.
+
+---
+
+## Who it is for
+
+Linux rewards people who want leverage, automation, and systems they can reshape instead of merely consume.
 ```
+
+## Current QA coverage
+
+- Unit coverage: `tests/unit/repository.test.ts` verifies `splitSlides()` for plain slides, supported image directives, unsupported directives, invalid frontmatter errors, missing-file behavior, and slug filtering.
+- Browser coverage: `tests/browser/routes.spec.ts` verifies the homepage and each seeded route render successfully.
+- Build coverage: `generateStaticParams()` and page metadata execute successfully during `npm run build` with the current content set.

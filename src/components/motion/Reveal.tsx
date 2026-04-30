@@ -41,17 +41,17 @@ function ViewportReveal({
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const inView = useInView(ref, { amount: 0.2, margin: "0px 0px -12% 0px" });
-
-  if (reduced) {
-    return <div>{children}</div>;
-  }
+  const animate = reduced ? { opacity: 1, y: 0 } : inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 };
+  const transition = reduced
+    ? { duration: 0 }
+    : { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay };
 
   return (
     <div ref={ref}>
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
+        initial={reduced ? false : { opacity: 0, y: 24 }}
+        animate={animate}
+        transition={transition}
       >
         {children}
       </motion.div>
@@ -75,7 +75,7 @@ function SlideReveal({
   const y = useTransform(smooth, [start, start + 0.35], [30, 0]);
 
   if (reduced) {
-    return <div>{children}</div>;
+    return <motion.div style={{ opacity: 1, y: 0 }}>{children}</motion.div>;
   }
 
   return <motion.div style={{ opacity, y }}>{children}</motion.div>;
