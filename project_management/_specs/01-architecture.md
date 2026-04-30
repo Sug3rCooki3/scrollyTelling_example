@@ -19,10 +19,10 @@
 
 Status as of 2026-04-30 after implementing **spec 00**:
 
-- Implemented: static Next.js app scaffold, content loading, standard and presentation layouts, motion primitives, markdown renderer, sample OS content, unit test, and GitHub Pages workflow.
-- Verified locally: `npm run lint`, `npm run test`, and `npm run build` all pass.
+- Implemented: static Next.js app scaffold, content loading, standard and presentation layouts, motion primitives, markdown renderer, sample OS content, unit test, browser smoke tests, and GitHub Pages workflow.
+- Verified locally: `npm run lint`, `npm run test`, `npm run test:e2e`, and `npm run build` all pass.
 - Export status: `next build` generates static routes for `/`, `/linux`, `/macos`, `/windows`, and `/mobile`.
-- Remaining QA gap: 60fps animation performance and end-to-end browser behavior have not been benchmarked yet; only lint, unit test, and production build have been validated so far.
+- Remaining QA gap: 60fps animation performance has not been benchmarked yet. Browser coverage currently consists of route-level smoke tests, not detailed interaction or accessibility assertions.
 
 ## Notable implementation changes
 
@@ -72,6 +72,7 @@ scrolly-os/
 ├── tests/
 │   ├── unit/                    # Vitest
 │   └── browser/                 # Playwright
+│       └── routes.spec.ts       # Smoke tests for homepage and OS routes
 ├── .github/workflows/deploy.yml
 ├── next.config.ts
 ├── tsconfig.json              # sets "@/*": ["./src/*"]
@@ -249,27 +250,56 @@ CSS custom properties used across all components. Define them here and nowhere e
 
 ```css
 :root {
-  --font-sans: system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, monospace;
-  --color-bg: #ffffff;
-  --color-text: #111111;
-  --color-accent: #0070f3;   /* used by ProgressBar */
-  --color-muted: #666666;
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", "Consolas", monospace;
+  --color-bg: #f4efe6;
+  --color-surface: rgba(255, 252, 247, 0.84);
+  --color-text: #1f1b17;
+  --color-accent: #d76a2f;
+  --color-muted: #73665b;
+  --color-line: rgba(31, 27, 23, 0.14);
+  --shadow-soft: 0 24px 60px rgba(64, 42, 24, 0.12);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body { height: 100%; }
+html,
+body {
+  min-height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: var(--font-sans);
-  background: var(--color-bg);
+  background:
+    radial-gradient(circle at top, rgba(215, 106, 47, 0.12), transparent 30%),
+    linear-gradient(180deg, #fbf6ef 0%, var(--color-bg) 45%, #efe7da 100%);
   color: var(--color-text);
   line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: rgba(215, 106, 47, 0.5);
+  text-underline-offset: 0.15em;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: rgba(215, 106, 47, 0.2);
 }
 ```
 
