@@ -1,0 +1,116 @@
+.root {
+  position: relative;
+}
+
+.slideBg,
+.slideSplit,
+.slideSplitReverse,
+.slidePlain {
+  width: 100%;
+  height: 100%;
+}
+
+.slideBg {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slideBg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 10, 8, 0.15), rgba(11, 10, 8, 0.72));
+}
+
+.slideBgContent {
+  position: relative;
+  z-index: 1;
+  max-width: 60ch;
+  padding: 2rem;
+  color: #fffdf8;
+}
+
+.slideContent {
+  flex: 1;
+  min-width: 0;
+  padding: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slideSplit,
+.slideSplitReverse {
+  display: flex;
+  background: rgba(255, 251, 245, 0.78);
+}
+
+.slideSplitReverse {
+  flex-direction: row-reverse;
+}
+
+.splitImageWrapper {
+  position: relative;
+  width: 50%;
+  height: 100%;
+}
+
+.slidePlain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.plainCard {
+  width: min(72ch, 100%);
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--color-line);
+  border-radius: 32px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.root :global(h1),
+.root :global(h2),
+.root :global(h3) {
+  line-height: 0.98;
+  margin-bottom: 1rem;
+}
+
+.root :global(h1) {
+  font-size: clamp(3rem, 8vw, 7rem);
+}
+
+.root :global(h2) {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+}
+
+.root :global(p),
+.root :global(ul) {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+}
+
+.root :global(ul) {
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 900px) {
+  .slideSplit,
+  .slideSplitReverse {
+    flex-direction: column;
+  }
+
+  .splitImageWrapper {
+    width: 100%;
+    height: 42vh;
+  }
+
+  .slideContent {
+    padding: 2rem 1.25rem 3rem;
+  }
+}

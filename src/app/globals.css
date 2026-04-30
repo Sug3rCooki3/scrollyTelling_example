@@ -1,0 +1,52 @@
+:root {
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", "Consolas", monospace;
+  --color-bg: #f4efe6;
+  --color-surface: rgba(255, 252, 247, 0.84);
+  --color-text: #1f1b17;
+  --color-accent: #d76a2f;
+  --color-muted: #73665b;
+  --color-line: rgba(31, 27, 23, 0.14);
+  --shadow-soft: 0 24px 60px rgba(64, 42, 24, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(circle at top, rgba(215, 106, 47, 0.12), transparent 30%),
+    linear-gradient(180deg, #fbf6ef 0%, var(--color-bg) 45%, #efe7da 100%);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: rgba(215, 106, 47, 0.5);
+  text-underline-offset: 0.15em;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: rgba(215, 106, 47, 0.2);
+}

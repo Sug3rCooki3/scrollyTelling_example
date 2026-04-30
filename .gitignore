@@ -1,1 +1,7 @@
 docs/_*
+node_modules/
+.next/
+out/
+playwright-report/
+test-results/
+
