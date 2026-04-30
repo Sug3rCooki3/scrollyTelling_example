@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MarkdownRenderer } from "@/components/markdown/MarkdownRenderer";
 import type { PageData } from "@/lib/content/repository";
+import { url } from "@/lib/site-config";
 import styles from "./StandardLayout.module.css";
 
 const navLinks = [
@@ -30,7 +31,7 @@ export function StandardLayout({ page }: { page: PageData }) {
         {page.frontmatter.heroImage && (
           <div className={styles.hero}>
             <Image
-              src={page.frontmatter.heroImage}
+              src={url(page.frontmatter.heroImage)}
               alt=""
               fill
               sizes="100vw"

@@ -56,9 +56,8 @@ test.describe("os routes", () => {
 });
 
 test.describe("reduced motion", () => {
-  test.use({ reducedMotion: "reduce" });
-
   test("renders article content without motion wrapper styles", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
 
     const paragraphParent = page
