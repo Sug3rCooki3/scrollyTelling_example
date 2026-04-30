@@ -16,6 +16,7 @@ test.describe("os routes", () => {
 
     await expect(page.getByRole("heading", { level: 2, name: "Linux became the operating system of builders" })).toBeVisible();
     await expect(page.getByTestId("presentation-progress")).toBeAttached();
+    await expect(page.locator('img[src*="linux-split.svg"]')).toHaveCount(1);
   });
 
   test("renders the macos presentation page", async ({ page }) => {
@@ -29,12 +30,15 @@ test.describe("os routes", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: "Windows" })).toBeVisible();
     await expect(page.getByText("The default desktop for most people")).toBeVisible();
+    await expect(page.locator('img[src*="windows-hero.svg"]')).toHaveCount(1);
+    await expect(page.getByTestId("presentation-progress")).toHaveCount(0);
   });
 
   test("renders the mobile presentation page", async ({ page }) => {
     await page.goto("/mobile/");
 
     await expect(page.getByRole("heading", { level: 2, name: "Computing shrank and intensified" })).toBeVisible();
+    await expect(page.locator('img[src*="mobile-split-reverse.svg"]')).toHaveCount(1);
   });
 
   test("presentation progress responds to page scroll", async ({ page }) => {

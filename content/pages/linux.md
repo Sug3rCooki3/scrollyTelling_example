@@ -7,11 +7,15 @@ seo:
   description: "The Linux story told through scroll-driven presentation slides."
 ---
 
+![bg](/images/linux-background.svg)
+
 ## Linux became the operating system of builders
 
 It won servers, containers, embedded devices, and the imagination of people who want to understand the machine they use.
 
 ---
+
+![split](/images/linux-split.svg)
 
 ## A kernel, not a single product
 

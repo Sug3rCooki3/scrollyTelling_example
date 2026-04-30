@@ -7,6 +7,21 @@
 | Standard | `layout: "standard"` | Long-form article, content flows top to bottom, each block reveals on scroll |
 | Presentation | `layout: "presentation"` | Body split into sticky slides; content animates in as you scroll through each section |
 
+## Implementation status
+
+Status as of 2026-04-30 after implementing **spec 04**:
+
+- Implemented: `PageLayoutFactory`, `StandardLayout`, `PresentationLayout`, `ProgressBar`, `MarkdownRenderer`, and `ContextualLink` are all wired into the live routes.
+- Seeded content now exercises the key layout branches end-to-end: `windows` uses `heroImage`, `linux` uses `bg` and `split` slides, and `mobile` uses `split-reverse`.
+- Verified locally: `npm run test:e2e -- tests/browser/routes.spec.ts` passes with layout-specific assertions, and `npm run build` still exports all routes successfully.
+- Remaining QA gap: there is not yet a dedicated automated assertion for the CSS background image on `bg` slides; current coverage is indirect through route rendering and slide content visibility.
+
+## Notable implementation details
+
+- `StandardLayout` includes a richer top navigation and a small kicker above the title, while still satisfying the spec's required structure.
+- `PresentationLayout` wraps `plain` slides in a styled card container (`plainCard`) rather than leaving the text on a fully bare canvas.
+- `ProgressBar` is marked `aria-hidden="true"` and has a `data-testid` hook for browser QA because it is decorative.
+
 ## PageLayoutFactory
 
 ```tsx
@@ -32,7 +47,7 @@ Responsibilities:
 - Render the page title and summary.
 - Pass the markdown body to `<MarkdownRenderer />`, which wraps each block in `<Reveal>`.
 - Apply a max-width reading column (~68ch) centered on screen.
-- Simple `<nav>` with site title and links at the top.
+- Top `<nav>` with site title and route links.
 
 ```tsx
 // src/components/layouts/StandardLayout.tsx
@@ -42,19 +57,36 @@ import type { PageData } from "@/lib/content/repository";
 import { MarkdownRenderer } from "@/components/markdown/MarkdownRenderer";
 import styles from "./StandardLayout.module.css";
 
+const navLinks = [
+  { href: "/linux", label: "Linux" },
+  { href: "/macos", label: "macOS" },
+  { href: "/windows", label: "Windows" },
+  { href: "/mobile", label: "Mobile" },
+];
+
 export function StandardLayout({ page }: { page: PageData }) {
   return (
     <div className={styles.root}>
       <nav className={styles.nav}>
-        <Link href="/">OS Stories</Link>
+        <Link href="/" className={styles.brand}>
+          OS Stories
+        </Link>
+        <div className={styles.navLinks}>
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href}>
+              {link.label}
+            </Link>
+          ))}
+        </div>
       </nav>
       <main>
         {page.frontmatter.heroImage && (
           <div className={styles.hero}>
-            <Image src={page.frontmatter.heroImage} alt="" fill style={{ objectFit: "cover" }} />
+            <Image src={page.frontmatter.heroImage} alt="" fill sizes="100vw" style={{ objectFit: "cover" }} />
           </div>
         )}
         <article className={styles.body}>
+          <p className={styles.kicker}>Operating systems, on scroll</p>
           <h1>{page.frontmatter.title}</h1>
           {page.frontmatter.summary && <p className={styles.summary}>{page.frontmatter.summary}</p>}
           <MarkdownRenderer>{page.content}</MarkdownRenderer>
@@ -72,14 +104,39 @@ export function StandardLayout({ page }: { page: PageData }) {
 }
 
 .nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   padding: 1rem 2rem;
-  border-bottom: 1px solid var(--color-muted);
+  backdrop-filter: blur(16px);
+  background: rgba(251, 246, 239, 0.82);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.navLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  color: var(--color-muted);
+}
+
+.navLinks a {
+  text-decoration: none;
 }
 
 .hero {
-  position: relative;  /* required for Image fill */
+  position: relative;
   width: 100%;
   height: 60vh;
   overflow: hidden;
@@ -88,13 +145,40 @@ export function StandardLayout({ page }: { page: PageData }) {
 .body {
   max-width: 68ch;
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: 5rem 1.25rem 6rem;
+}
+
+.kicker {
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.body h1 {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 0.95;
+  margin-bottom: 1rem;
 }
 
 .summary {
   color: var(--color-muted);
-  font-size: 1.125rem;
+  font-size: 1.2rem;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 700px) {
+  .nav {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 1rem 1.25rem;
+  }
+
+  .body {
+    padding-top: 3rem;
+  }
 }
 ```
 
@@ -150,7 +234,7 @@ function SlideStage({ slide }: { slide: ParsedSlide }) {
     return (
       <div className={slide.kind === "split" ? styles.slideSplit : styles.slideSplitReverse}>
         <div className={styles.splitImageWrapper}>
-          <Image src={slide.imageUrl!} alt="" fill style={{ objectFit: "cover" }} />
+          <Image src={slide.imageUrl!} alt="" fill sizes="50vw" style={{ objectFit: "cover" }} />
         </div>
         <div className={styles.slideContent}>
           <MarkdownRenderer>{slide.markdown}</MarkdownRenderer>
@@ -161,7 +245,9 @@ function SlideStage({ slide }: { slide: ParsedSlide }) {
   // plain
   return (
     <div className={styles.slidePlain}>
-      <MarkdownRenderer>{slide.markdown}</MarkdownRenderer>
+      <div className={styles.plainCard}>
+        <MarkdownRenderer>{slide.markdown}</MarkdownRenderer>
+      </div>
     </div>
   );
 }
@@ -227,9 +313,16 @@ function SlideStage({ slide }: { slide: ParsedSlide }) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
   padding: 2rem;
+}
+
+.plainCard {
+  width: min(72ch, 100%);
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--color-line);
+  border-radius: 32px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
 }
 ```
 
@@ -328,6 +421,8 @@ export function ProgressBar() {
   const { scrollYProgress } = useScroll(); // no target = whole document
   return (
     <motion.div
+      aria-hidden="true"
+      data-testid="presentation-progress"
       style={{
         scaleX: scrollYProgress,
         position: "fixed",
@@ -350,3 +445,9 @@ export function ProgressBar() {
 - Do not nest `PresentationSlide` inside `PresentationSlide`.
 - Do not render `MarkdownRenderer` twice for the same content.
 - Do not use Tailwind classes — CSS Modules only.
+
+## Current QA coverage
+
+- Browser coverage in `tests/browser/routes.spec.ts` verifies that `windows` renders a hero image and does not render the presentation progress bar.
+- Browser coverage in `tests/browser/routes.spec.ts` verifies that `linux` renders a `split` slide image and that `mobile` renders a `split-reverse` slide image.
+- Existing motion/browser coverage also verifies that presentation pages expose the progress bar and respond to scroll.
