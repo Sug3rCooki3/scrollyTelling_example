@@ -2,7 +2,7 @@
 title: "Windows"
 layout: "standard"
 summary: "The mainstream operating system that turned compatibility into scale."
-heroImage: "/images/windows-hero.svg"
+heroImage: "/images/gettyimages-532739904-612x612.jpg"
 seo:
   title: "Windows | OS Stories"
   description: "A long-form look at Windows and its role in mass-market computing."

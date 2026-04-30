@@ -18,7 +18,7 @@ test("homepage combines every chapter into one scroll story", async ({ page }) =
 
   await page.getByRole("link", { name: "Windows" }).click();
   await expect(page.getByTestId("chapter-windows")).toBeInViewport();
-  await expect(page.locator('img[src*="windows-hero.svg"]')).toHaveCount(1);
+  await expect(page.locator('img[src*="gettyimages-532739904-612x612.jpg"]')).toHaveCount(1);
 });
 
 test.describe("os routes", () => {
@@ -27,13 +27,14 @@ test.describe("os routes", () => {
 
     await expect(page.getByRole("heading", { level: 2, name: "Linux became the operating system of builders" })).toBeVisible();
     await expect(page.getByTestId("presentation-progress")).toBeAttached();
-    await expect(page.locator('img[src*="linux-split.svg"]')).toHaveCount(1);
+    await expect(page.locator('img[src*="Hostname-Linux-header.jpg"]')).toHaveCount(1);
   });
 
   test("renders the macos presentation page", async ({ page }) => {
     await page.goto("/macos/");
 
     await expect(page.getByRole("heading", { level: 2, name: "The desktop Apple built" })).toBeVisible();
+    await expect(page.locator('img[src*="0-64512-19360-19676-Screen-Shot-2016-12-13-at-11022-PM-l-xl.jpg"]')).toHaveCount(1);
   });
 
   test("renders the windows article page", async ({ page }) => {
@@ -41,7 +42,7 @@ test.describe("os routes", () => {
 
     await expect(page.getByRole("heading", { level: 1, name: "Windows" })).toBeVisible();
     await expect(page.getByText("The default desktop for most people")).toBeVisible();
-    await expect(page.locator('img[src*="windows-hero.svg"]')).toHaveCount(1);
+    await expect(page.locator('img[src*="gettyimages-532739904-612x612.jpg"]')).toHaveCount(1);
     await expect(page.getByTestId("presentation-progress")).toHaveCount(0);
   });
 
