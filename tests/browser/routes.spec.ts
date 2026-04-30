@@ -18,7 +18,7 @@ test("homepage combines every chapter into one scroll story", async ({ page }) =
 
   await page.getByRole("link", { name: "Windows" }).click();
   await expect(page.getByTestId("chapter-windows")).toBeInViewport();
-  await expect(page.locator('img[src*="gettyimages-532739904-612x612.jpg"]')).toHaveCount(1);
+  await expect(page.locator('img[src*="32-350-881-V01.jpg"]')).toHaveCount(1);
 });
 
 test.describe("os routes", () => {
@@ -37,13 +37,13 @@ test.describe("os routes", () => {
     await expect(page.locator('img[src*="0-64512-19360-19676-Screen-Shot-2016-12-13-at-11022-PM-l-xl.jpg"]')).toHaveCount(1);
   });
 
-  test("renders the windows article page", async ({ page }) => {
+  test("renders the windows presentation page", async ({ page }) => {
     await page.goto("/windows/");
 
-    await expect(page.getByRole("heading", { level: 1, name: "Windows" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "The default desktop for most people" })).toBeVisible();
     await expect(page.getByText("The default desktop for most people")).toBeVisible();
-    await expect(page.locator('img[src*="gettyimages-532739904-612x612.jpg"]')).toHaveCount(1);
-    await expect(page.getByTestId("presentation-progress")).toHaveCount(0);
+    await expect(page.getByTestId("presentation-progress")).toBeAttached();
+    await expect(page.locator('img[src*="32-350-881-V01.jpg"]')).toHaveCount(1);
   });
 
   test("renders the mobile presentation page", async ({ page }) => {
