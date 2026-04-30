@@ -13,6 +13,8 @@ Mobile operating systems changed the center of gravity from files and windows to
 
 ---
 
+![split-reverse](/images/mobile-split-reverse.svg)
+
 ## iOS and Android split the market
 
 One model prized control and vertical integration. The other scaled through manufacturer diversity and broad distribution.
