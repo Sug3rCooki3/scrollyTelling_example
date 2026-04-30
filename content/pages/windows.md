@@ -78,3 +78,5 @@ That balance is messy, but it is also the source of its reach. Linux is more mol
 Windows is for the broad middle of computing: users who need reach, peripheral support, enterprise software, and the least surprise when sharing files with everyone else.
 
 It is also for people who want the operating system to meet them halfway. If your day involves search, shortcuts, screenshots, side-by-side windows, backups, and a mix of work and play, Windows makes a strong case for itself not through purity, but through accumulation. It keeps becoming the place where the most kinds of computing can still coexist.
+
+Citation: https://www.microsoft.com/en-us/windows/tips
