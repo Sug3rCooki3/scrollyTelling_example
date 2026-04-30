@@ -15,6 +15,7 @@ test.describe("os routes", () => {
     await page.goto("/linux/");
 
     await expect(page.getByRole("heading", { level: 2, name: "Linux became the operating system of builders" })).toBeVisible();
+    await expect(page.getByTestId("presentation-progress")).toBeAttached();
   });
 
   test("renders the macos presentation page", async ({ page }) => {
@@ -34,5 +35,34 @@ test.describe("os routes", () => {
     await page.goto("/mobile/");
 
     await expect(page.getByRole("heading", { level: 2, name: "Computing shrank and intensified" })).toBeVisible();
+  });
+
+  test("presentation progress responds to page scroll", async ({ page }) => {
+    await page.goto("/linux/");
+
+    const progressBar = page.getByTestId("presentation-progress");
+    await expect(progressBar).toBeAttached();
+
+    const before = await progressBar.evaluate((element) => getComputedStyle(element).transform);
+    await page.mouse.wheel(0, 1400);
+    await expect
+      .poll(async () => progressBar.evaluate((element) => getComputedStyle(element).transform))
+      .not.toBe(before);
+  });
+});
+
+test.describe("reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("renders article content without motion wrapper styles", async ({ page }) => {
+    await page.goto("/");
+
+    const paragraphParent = page
+      .getByText("Welcome to OS Stories. Explore the operating systems that shaped computing.")
+      .locator("..");
+
+    await expect
+      .poll(async () => paragraphParent.getAttribute("style"))
+      .toContain("opacity: 1");
   });
 });

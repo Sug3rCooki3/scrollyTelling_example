@@ -2,6 +2,21 @@
 
 This is the most important spec. Every scroll animation in the site flows from three small components.
 
+## Implementation status
+
+Status as of 2026-04-30 after QA on **spec 02**:
+
+- Implemented: `SlideContext`, `PresentationSlide`, and `Reveal` are all wired into the app and active on shipped routes.
+- Verified locally: `npm run test:e2e` now covers presentation progress-bar presence, progress response to scroll, and reduced-motion rendering on top of the route smoke tests.
+- Reduced-motion behavior is implemented in both viewport and slide modes by rendering final-state motion styles immediately instead of relying on animated entry transitions.
+- Remaining QA gap: there is still no fine-grained performance benchmark for frame rate or a unit-level test harness for motion hooks.
+
+## Notable implementation details
+
+- `PresentationSlide` uses `zIndex: index + 1` rather than `index` so later slides reliably stack above earlier slides.
+- `ProgressBar` is implemented alongside the motion system for presentation pages and is marked `aria-hidden="true"` because it is decorative.
+- The reduced-motion branch in `Reveal` keeps the motion tree stable and sets final-state styles immediately, which avoids hydration-time animated markup in reduced-motion mode.
+
 ## Mental model
 
 There are two animation modes. The same component picks the right mode automatically via React context.
@@ -69,7 +84,7 @@ export function PresentationSlide({
     <SlideContext.Provider value={{ scrollYProgress }}>
       <section
         ref={ref}
-        style={{ height: "170vh", position: "relative", zIndex: index }}
+        style={{ height: "170vh", position: "relative", zIndex: index + 1 }}
       >
         {/* Sticky viewport-height stage */}
         <div style={{ position: "sticky", top: 0, height: "100vh" }}>
@@ -108,14 +123,17 @@ function ViewportReveal({ children, delay }: { children: React.ReactNode; delay:
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const inView = useInView(ref, { amount: 0.2, margin: "0px 0px -12% 0px" });
-  // All hooks called above — early return is safe here
-  if (reduced) return <div>{children}</div>;
+  const animate = reduced ? { opacity: 1, y: 0 } : inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 };
+  const transition = reduced
+    ? { duration: 0 }
+    : { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay };
+
   return (
     <div ref={ref}>
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
+        initial={reduced ? false : { opacity: 0, y: 24 }}
+        animate={animate}
+        transition={transition}
       >
         {children}
       </motion.div>
@@ -132,7 +150,7 @@ function SlideReveal({
   const start = Math.min(delay * 0.5, 0.5);
   const opacity = useTransform(smooth, [start, start + 0.35], [0, 1]);
   const y = useTransform(smooth, [start, start + 0.35], [30, 0]);
-  if (reduced) return <div>{children}</div>;
+  if (reduced) return <motion.div style={{ opacity: 1, y: 0 }}>{children}</motion.div>;
   return <motion.div style={{ opacity, y }}>{children}</motion.div>;
 }
 ```
@@ -151,3 +169,9 @@ Authors write Markdown. They never import motion components. The layout wires th
 
 - `StandardLayout` wraps each rendered block in `<Reveal>`. No context provided → viewport mode.
 - `PresentationLayout` wraps each slide in `<PresentationSlide>`. Context provided → slide mode.
+
+## Current QA coverage
+
+- Browser coverage in `tests/browser/routes.spec.ts` verifies that presentation pages render the progress bar and that its transform changes as the page scrolls.
+- Browser coverage in `tests/browser/routes.spec.ts` also verifies that reduced-motion mode settles article content into final-state styles instead of leaving the initial hidden transform in place.
+- Route smoke tests indirectly exercise both motion modes because `windows` renders through viewport mode and `linux`, `macos`, and `mobile` render through slide mode.

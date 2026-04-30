@@ -7,6 +7,8 @@ export function ProgressBar() {
 
   return (
     <motion.div
+      aria-hidden="true"
+      data-testid="presentation-progress"
       style={{
         scaleX: scrollYProgress,
         position: "fixed",
