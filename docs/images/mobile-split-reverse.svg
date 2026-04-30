@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Mobile ecosystem illustration</title>
+  <desc id="desc">Two stylized phones surrounded by app bubbles.</desc>
+  <rect width="1000" height="1200" fill="#f4efe6"/>
+  <g fill="#1f1b17">
+    <rect x="180" y="180" width="260" height="520" rx="44"/>
+    <rect x="560" y="280" width="260" height="520" rx="44"/>
+  </g>
+  <g fill="#fffaf2">
+    <rect x="205" y="220" width="210" height="430" rx="24"/>
+    <rect x="585" y="320" width="210" height="430" rx="24"/>
+  </g>
+  <g fill="#d76a2f" opacity="0.85">
+    <circle cx="170" cy="860" r="58"/>
+    <circle cx="470" cy="930" r="86"/>
+    <circle cx="760" cy="160" r="54"/>
+    <circle cx="860" cy="920" r="64"/>
+  </g>
+</svg>

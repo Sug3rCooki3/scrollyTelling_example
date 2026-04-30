@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Linux background illustration</title>
+  <desc id="desc">Dark terminal-like backdrop with glowing code lines.</desc>
+  <rect width="1600" height="900" fill="#0d1117"/>
+  <g stroke="#2ea043" stroke-width="6" stroke-linecap="round" opacity="0.65">
+    <path d="M120 210h420"/>
+    <path d="M120 280h660"/>
+    <path d="M120 350h540"/>
+    <path d="M120 420h720"/>
+    <path d="M120 490h600"/>
+    <path d="M120 560h780"/>
+  </g>
+  <g fill="#58a6ff" opacity="0.8">
+    <circle cx="1220" cy="240" r="120"/>
+    <circle cx="1330" cy="430" r="60"/>
+    <circle cx="1180" cy="610" r="170" opacity="0.45"/>
+  </g>
+</svg>

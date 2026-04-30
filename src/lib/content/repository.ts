@@ -41,8 +41,18 @@ export class ContentRepository {
     return files
       .filter((fileName) => fileName.endsWith(".md"))
       .map((fileName) => fileName.replace(/\.md$/, ""))
+      .sort((left, right) => left.localeCompare(right))
       .filter((slug) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug));
   }
+
+  async getAllPages(): Promise<PageData[]> {
+    const slugs = await getAllSlugsForRepo(this);
+    return Promise.all(slugs.map((slug) => this.getPageBySlug(slug)));
+  }
+}
+
+async function getAllSlugsForRepo(repository: ContentRepository) {
+  return repository.getAllSlugs();
 }
 
 export function splitSlides(body: string): ParsedSlide[] {

@@ -1,13 +1,24 @@
 import { expect, test } from "@playwright/test";
 
-test("homepage exposes the OS entry points", async ({ page }) => {
+test("homepage combines every chapter into one scroll story", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { level: 1, name: "OS Stories" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Linux" }).first()).toBeVisible();
-  await expect(page.getByRole("link", { name: "macOS" }).first()).toBeVisible();
-  await expect(page.getByRole("link", { name: "Windows" }).first()).toBeVisible();
-  await expect(page.getByRole("link", { name: "Mobile" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Linux" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "macOS" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Windows" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Mobile" })).toBeVisible();
+  await expect(page.getByTestId("presentation-progress")).toBeAttached();
+
+  await page.locator("body").press("Space");
+  await expect(page.getByTestId("chapter-linux")).toBeInViewport();
+
+  await page.locator("body").press("Space");
+  await expect(page.getByRole("heading", { level: 2, name: "Linux became the operating system of builders" })).toBeInViewport();
+
+  await page.getByRole("link", { name: "Windows" }).click();
+  await expect(page.getByTestId("chapter-windows")).toBeInViewport();
+  await expect(page.locator('img[src*="windows-hero.svg"]')).toHaveCount(1);
 });
 
 test.describe("os routes", () => {
@@ -61,11 +72,9 @@ test.describe("reduced motion", () => {
     await page.goto("/");
 
     const paragraphParent = page
-      .getByText("Welcome to OS Stories. Explore the operating systems that shaped computing.")
+      .getByText("Welcome to OS Stories. The chapters that used to live on separate pages now run as one continuous document.")
       .locator("..");
 
-    await expect
-      .poll(async () => paragraphParent.getAttribute("style"))
-      .toContain("opacity: 1");
+    await expect.poll(async () => paragraphParent.evaluate((element) => getComputedStyle(element).opacity)).toBe("1");
   });
 });

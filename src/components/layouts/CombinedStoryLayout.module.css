@@ -1,0 +1,139 @@
+.root {
+  min-height: 100vh;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  backdrop-filter: blur(16px);
+  background: rgba(251, 246, 239, 0.82);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.navLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  color: var(--color-muted);
+}
+
+.navLinks a {
+  text-decoration: none;
+}
+
+.introStep,
+.chapterLead,
+.articleStep {
+  min-height: 100vh;
+  padding: 3rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.introCard,
+.chapterLeadCard,
+.articleCard {
+  width: min(72ch, 100%);
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--color-line);
+  border-radius: 32px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.kicker,
+.chapterEyebrow {
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.introCard h1,
+.chapterLeadCard h2,
+.articleCard h2 {
+  line-height: 0.95;
+  margin-bottom: 1rem;
+}
+
+.introCard h1 {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+}
+
+.chapterLeadCard h2,
+.articleCard h2 {
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+}
+
+.summary,
+.chapterSummary {
+  color: var(--color-muted);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.hint {
+  margin-top: 2rem;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.hero {
+  position: relative;
+  width: min(1200px, 100%);
+  height: min(52vh, 520px);
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.articleStep {
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.articleCard :global(h3) {
+  margin: 2.5rem 0 0.75rem;
+  line-height: 1.1;
+}
+
+.articleCard :global(p),
+.articleCard :global(ul),
+.introCard :global(p),
+.introCard :global(ul) {
+  margin-top: 1rem;
+}
+
+.articleCard :global(ul),
+.introCard :global(ul) {
+  padding-left: 1.2rem;
+}
+
+.articleCard :global(li + li),
+.introCard :global(li + li) {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 700px) {
+  .nav {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 1rem 1.25rem;
+  }
+}

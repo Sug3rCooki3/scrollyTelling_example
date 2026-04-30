@@ -7,12 +7,7 @@ seo:
   description: "The story of operating systems, told through animated scroll-driven pages."
 ---
 
-Welcome to OS Stories. Explore the operating systems that shaped computing.
-
-- [Linux](/linux)
-- [macOS](/macos)
-- [Windows](/windows)
-- [Mobile](/mobile)
+Welcome to OS Stories. The chapters that used to live on separate pages now run as one continuous document.
 
 ## Why these systems matter
 
@@ -20,4 +15,4 @@ Operating systems decide who gets power, how software reaches people, and what k
 
 ## How to read this site
 
-Some pages read like essays. Others lock into sticky slides and animate as you move through the story.
+Scroll naturally or press Space to advance chapter by chapter through the story.

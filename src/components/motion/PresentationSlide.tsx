@@ -7,9 +7,13 @@ import { SlideContext } from "./SlideContext";
 export function PresentationSlide({
   children,
   index,
+  id,
+  testId,
 }: {
   children: React.ReactNode;
   index: number;
+  id?: string;
+  testId?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -20,6 +24,9 @@ export function PresentationSlide({
   return (
     <SlideContext.Provider value={{ scrollYProgress }}>
       <section
+        id={id}
+        data-story-step="true"
+        data-testid={testId}
         ref={ref}
         style={{ height: "170vh", position: "relative", zIndex: index + 1 }}
       >
