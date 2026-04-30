@@ -37,3 +37,5 @@ One-time GitHub setup:
 4. Push to `main` to trigger deployment.
 
 If you want to publish from the repository itself instead of Actions artifacts, choose `Deploy from a branch`, select `main`, and set the folder to `/docs` after committing the generated `docs/` output.
+
+https://sug3rcooki3.github.io/scrollyTelling_example/
